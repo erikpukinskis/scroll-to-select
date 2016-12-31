@@ -1,3 +1,5 @@
+![Screenshot of a checkbox that's lighting up light blue with a similar color bar behind, reads "HIEEE"](screenshot.png)
+
 **scroll-to-select** puts a selector beam on a web page, and lights up elements with ids you provide.
 
 HTML:
