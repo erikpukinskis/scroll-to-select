@@ -74,7 +74,7 @@ module.exports = library.export(
 
       if (controlsAreVisible) {
         currentSelection.classList.remove("selected")
-        onUnselect && onUnselect()
+        onUnselect && onUnselect(currentSelection)
         controlsAreVisible = false
       }
 
