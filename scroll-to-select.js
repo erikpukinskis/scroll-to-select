@@ -29,6 +29,8 @@ module.exports = library.export(
       if (!selectorIsAdded) {
         window.onscroll = updateSelection
 
+        document.body.style["margin-bottom"] = (window.innerHeight - 150)+"px"
+
         var selectorEl = element(
           ".selector", [
             options.text||"",
@@ -70,7 +72,11 @@ module.exports = library.export(
       }
     )
 
+    var timeout
+
     function updateSelection() {
+
+      var oldSelection = currentSelection
 
       if (controlsAreVisible) {
         currentSelection.classList.remove("selected")
@@ -130,14 +136,23 @@ module.exports = library.export(
 
       currentSelection = newSelection
 
-      if (!currentSelection) { return }
+      if (!oldSelection) { return }
 
-      afterASecond(function() {
-        if (!currentSelection) { return }
+      if (timeout) {
+        clearTimeout(timeout)
+      }
+
+      timeout = setTimeout(selectNow.bind(null, currentSelection, onSelect), MINIMUM_PAUSE)
+
+    }
+
+    function selectNow(newSelection, callback) {
+      if (newSelection) {
         newSelection.classList.add("selected")
-        onSelect && onSelect(currentSelection)
         controlsAreVisible = true
-      })
+      }
+
+      callback && callback(newSelection)
     }
     
     function elementOverlapsSelector(el) {
@@ -148,25 +163,6 @@ module.exports = library.export(
       var endsAboveLine = rect.bottom < SELECTOR_TOP
 
       return startsAboveLine && !endsAboveLine
-    }
-
-    function afterASecond(func) {
-      if (!func.waitingToTry) {
-        func.waitingToTry = setTimeout(tryToCall.bind(null, func), MINIMUM_PAUSE)
-      }
-
-      func.lastTry = new Date()
-    }
-
-    function tryToCall(func) {
-      var sinceLastTry = new Date() - func.lastTry
-
-      if (sinceLastTry < MINIMUM_PAUSE) {
-        func.waitingToTry = setTimeout(tryToCall.bind(null, func), MINIMUM_PAUSE - sinceLastTry + 100)
-      } else {
-        func.waitingToTry = null
-        func()
-      }
     }
 
     return scrollToSelect
