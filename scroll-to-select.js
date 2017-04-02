@@ -52,6 +52,7 @@ module.exports = library.export(
       ".selector",
       {
         "display": "none",
+        "font-family": "sans-serif",
         "color": "#fcffff",
         "text-align": "right",
         "font-size": "32px",
