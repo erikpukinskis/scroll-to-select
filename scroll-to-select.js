@@ -43,7 +43,7 @@ module.exports = library.export(
         addHtml(element(
           ".selector-toggle",
           options.text||"",
-          {onclick: options.onclick}
+          {onclick: "toggleSelector()"}
         ).html())
         selectorIsAdded = true
       }
