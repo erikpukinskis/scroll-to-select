@@ -6,7 +6,7 @@ module.exports = library.export(
   function(addHtml, element) {
 
     var MINIMUM_PAUSE = 750
-    var SELECTOR_TOP = 120
+    var SELECTOR_TOP = 150
     var SELECTOR_HEIGHT = 32
     var SELECTOR_BOTTOM = SELECTOR_TOP+SELECTOR_HEIGHT
 
@@ -29,7 +29,7 @@ module.exports = library.export(
       if (!selectorIsAdded) {
         window.onscroll = updateSelection
 
-        document.body.style["margin-bottom"] = (window.innerHeight - 150)+"px"
+        document.body.style["margin-bottom"] = (window.innerHeight - SELECTOR_TOP - SELECTOR_HEIGHT)+"px"
 
         var selectorEl = element(
           ".selector", [
@@ -69,7 +69,7 @@ module.exports = library.export(
         "text-shadow": "3px -3px 0px #eff, -2px 2px 0px #ceffff",
         "left": "50%",
         "margin-left": "-45%",
-        "top": "110px", // SELECTOR_TOP - border width
+        "top": (SELECTOR_TOP+10)+"px", // SELECTOR_TOP - border width
       }
     )
 
