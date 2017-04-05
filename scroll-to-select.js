@@ -33,49 +33,98 @@ module.exports = library.export(
 
         var selectorEl = element(
           ".selector", [
-            options.text||"",
-            element.stylesheet(selectorStyle, selectedStyle)
+            ,
+            stylesheet,
           ]
         )
 
         addHtml(selectorEl.html())
 
+        addHtml(element(
+          ".selector-toggle",
+          options.text||"",
+          {onclick: options.onclick}
+        ).html())
         selectorIsAdded = true
       }
     }
 
-    var selectedStyle = element.style(".selected", {
-        "background": "rgb(204, 255, 255)"
-      })
+    scrollToSelect.defineOn = function(bridge) {
+      if (bridge.remember("scroll-to-select")) { return }
 
-    var selectorStyle = element.style(
-      ".selector",
-      {
+      bridge.claimIdentifier("toggleSelector")
+
+      bridge.defineFunction(
+        [{open: false}],
+        function toggleSelector(state) {
+          var selector = document.querySelector(".selector")
+          var isPaused = selector.classList.contains("is-paused")
+
+          if (isPaused) {
+            selector.classList.remove("is-paused")
+            library.get("scroll-to-select").update()
+          } else {
+            selector.classList.add("is-paused")
+            library.get("scroll-to-select").update()
+          }
+        }
+      )
+
+      bridge.see("scroll-to-select", true)
+      }      
+
+    var stylesheet = element.stylesheet([
+
+      element.style(".selected", {
+        "background": "rgb(204, 255, 255)"
+      }),
+
+      element.style(".selector-toggle", {
         "display": "none",
-        "font-family": "sans-serif",
+        "text-shadow": "3px -3px 0px #eff, -2px 2px 0px #ceffff",
         "color": "#fcffff",
-        "text-align": "right",
+        "position": "fixed",
+        "top": (SELECTOR_TOP+20)+"px", 
+        "right": "8%",
         "font-size": "32px",
         "line-height": "32px",
+        "z-index": "1",
+        "cursor": "pointer",
+      }),
+
+      element.style(".selector.is-paused", {
+        "width": "215px",
+        "right": "-5%",
+        "left": "auto",
+      }),
+
+      element.style(".selector", {
+        "display": "none",
+        "position": "fixed",
+        "left": "50%",
+        "top": (SELECTOR_TOP+10)+"px", 
+        "margin-left": "-45%",
+        "z-index": "-1",
+
+        "font-family": "sans-serif",
+        "text-align": "right",
         "padding-right": "50px",
         "padding-top": "1px;",
         "box-sizing": "border-box",
-        "position": "fixed",
-        "z-index": "-1",
         "width": "90%",
         "height": "52px",
         "background": "#dff",
         "border": "10px solid #f5ffff",
-        "text-shadow": "3px -3px 0px #eff, -2px 2px 0px #ceffff",
-        "left": "50%",
-        "margin-left": "-45%",
-        "top": (SELECTOR_TOP+10)+"px", // SELECTOR_TOP - border width
-      }
-    )
+        "text-align": "right",
+// SELECTOR_TOP - border width
+      }),
+    ])
 
     var timeout
 
     function updateSelection() {
+
+      var isPaused = document.querySelector(".selector").classList.contains("is-paused")
 
       var oldSelection = currentSelection
 
@@ -86,6 +135,11 @@ module.exports = library.export(
       }
 
       newSelection = undefined
+
+      if (isPaused) {
+        return
+      }
+
 
       groups.forEach(function(group) {
         group.ids.forEach(getSelection)
@@ -111,17 +165,19 @@ module.exports = library.export(
 
       })
 
-      var shouldBeHidden = !newSelection
+      var shouldBeHidden = isPaused || !newSelection
       var shouldBeVisible = !shouldBeHidden
 
       if (shouldBeHidden &&
         selectorIsVisible) {
         document.querySelector(".selector").style.display = "none"
+        document.querySelector(".selector-toggle").style.display = "none"
         selectorIsVisible = false
       }
 
       if (shouldBeVisible && !selectorIsVisible) {
         document.querySelector(".selector").style.display = "block"
+        document.querySelector(".selector-toggle").style.display = "block"
         selectorIsVisible = true
       }
 
@@ -165,6 +221,8 @@ module.exports = library.export(
 
       return startsAboveLine && !endsAboveLine
     }
+
+    scrollToSelect.update = updateSelection
 
     return scrollToSelect
   }
