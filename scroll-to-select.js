@@ -76,7 +76,7 @@ module.exports = library.export(
     var stylesheet = element.stylesheet([
 
       element.style(".selected", {
-        "background": "rgb(204, 255, 255)"
+        "background": "#cff"
       }),
 
       element.style(".selector-toggle", {
@@ -90,6 +90,7 @@ module.exports = library.export(
         "line-height": "32px",
         "z-index": "1",
         "cursor": "pointer",
+        "background": "#dff",
       }),
 
       element.style(".selector.is-paused", {
